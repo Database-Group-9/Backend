@@ -4,6 +4,7 @@ const app = express();
 const port = 3001;
 const router = require("./routes");
 const controller = require('./routes/controller');
+var cors = require('cors');
 
 // this allows express to get body info for POST requests
 app.use(express.json());
@@ -11,6 +12,8 @@ app.use(express.json());
 app.use(morgan("combined"));
 
 app.use("./routes", router);
+
+app.use(cors());
 
 app.get('/', function(req, res){
     let movies = controller.getMovies();
