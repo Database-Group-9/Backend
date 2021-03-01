@@ -1,4 +1,4 @@
-[{"movieId":1,"title":"Hunter, The","genres":"Thriller","imdbId":"ec5e966d-6a00-4366-8c3c-0b81f044f725","tmdbId":"b3a9fd29-992a-4470-8e74-8eac02fbc834"},
+const movieData = [{"movieId":1,"title":"Hunter, The","genres":"Thriller","imdbId":"ec5e966d-6a00-4366-8c3c-0b81f044f725","tmdbId":"b3a9fd29-992a-4470-8e74-8eac02fbc834"},
 {"movieId":2,"title":"Shadows (Senki)","genres":"Drama|Horror|Mystery|Thriller","imdbId":"4af93b75-e3bc-4048-a1a4-b34ac8a92fa2","tmdbId":"0d287519-c8e6-466c-aa6c-9b5f247a7dff"},
 {"movieId":3,"title":"Paradise Lost: The Child Murders at Robin Hood Hills","genres":"Documentary","imdbId":"902609de-8556-4af4-b0bf-26ff1d443d8f","tmdbId":"d1f89113-6767-423f-8fba-d93fdf1fa0ed"},
 {"movieId":4,"title":"White Cliffs of Dover, The","genres":"Drama|Romance|War","imdbId":"19467a02-cd7a-4e67-ac76-05ce3cb55af7","tmdbId":"ce58e223-599f-4275-900a-39c9925c6efd"},
@@ -997,4 +997,7 @@
 {"movieId":997,"title":"East, The","genres":"Drama","imdbId":"5cf41e3a-6a8f-4ebc-b894-bf73ec659630","tmdbId":"75007540-175a-4bd9-8603-2820bca31b5e"},
 {"movieId":998,"title":"ABCs of Death, The","genres":"Horror","imdbId":"f9906a57-c346-469e-abbe-d2f706790f9e","tmdbId":"2d2160e4-e4b6-47ff-9aa3-96405a3ae4de"},
 {"movieId":999,"title":"In the Mouth of Madness","genres":"Horror|Thriller","imdbId":"18f754a4-53f8-4370-b30c-b31698b6c0a2","tmdbId":"6bd27265-8b80-4ac7-89f6-cdbc9bedb20f"},
-{"movieId":1000,"title":"Lights Out","genres":"Drama|Mystery|Thriller","imdbId":"41195f1a-bffd-4052-84d9-c15005b7662d","tmdbId":"c8278caa-6868-4469-bb96-717bd4812f29"}]
+{"movieId":1000,"title":"Lights Out","genres":"Drama|Mystery|Thriller","imdbId":"41195f1a-bffd-4052-84d9-c15005b7662d","tmdbId":"c8278caa-6868-4469-bb96-717bd4812f29"}
+];
+
+module.exports = movieData;
