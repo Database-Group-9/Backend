@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const db = require('./queries');
 const app = express();
 const port = 3001;
 const router = require("./routes");
@@ -16,9 +17,15 @@ app.use("./routes", router);
 app.use(cors());
 
 app.get('/', function(req, res){
-    let movies = controller.getMovies();
-    res.json(movies);
+    // let movies = controller.getMovies();
+    // res.json(movies);
+
+    res.json({info: 'database_cw'})
 });
+
+app.get('/movies', db.getMovies);
+app.get('/ratings', db.getRatings);
+app.get('/tags', db.getTags);
 
 // app.get('/movieId', (req, res) => {
 //     let movieById = controller.getMovieById(req.params.movieId);
