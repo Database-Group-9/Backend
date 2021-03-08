@@ -4,7 +4,7 @@ const movies = require('../services/movies');
 
 router.get('/', async function(req, res, next){
     try{
-        res.json(await movies.getAllMovies(req.query.page));
+        res.json(await movies.getAllMovies(req.query.page, req.query.sortBy, req.query.orderBy));
     }
     catch(err){
         console.error(`Error while retrieving movies `, err.message);
