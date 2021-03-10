@@ -4,17 +4,16 @@ var format = require('pg-format');
 
 async function getTotalRows(table='movies'){
     const db_table = helper.sanitiseParams(table);
-    var sql = format("SELECT COUNT(*) FROM %s", 
+    var sql = format("SELECT COUNT(*) as count FROM %s", 
                     db_table)
-    const rows = await db.query(
+    const rows = await db.totalRowsQuery(
         sql,
         []
     );
     const data = helper.emptyOrRows(rows)
-    const meta = {table};
     return{
         data, 
-        meta
+        table
     }
 }
 
