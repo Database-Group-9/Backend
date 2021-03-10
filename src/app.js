@@ -7,6 +7,7 @@ var indexRouter = require('./routes/index');
 var moviesRouter = require('./routes/movies');
 var ratingsRouter = require('./routes/ratings');
 var tagsRouter = require('./routes/tags');
+var totalRowsRouter = require('./routes/totalRows');
 
 var app = express();
 var cors = require('cors')
@@ -22,5 +23,6 @@ app.use('/', indexRouter);
 app.use('/movies', moviesRouter);
 app.use('/ratings', ratingsRouter);
 app.use('/tags', tagsRouter);
+app.use('/totalRows', totalRowsRouter);
 
 module.exports = app;
