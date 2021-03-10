@@ -9,18 +9,33 @@ async function getMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', filterBy
     const theFilter = helper.sanitiseParams(filter);
     const sort = helper.sanitiseParams(sortBy);
     const order = helper.sanitiseParams(orderBy);
+    var sql_0 = format("SELECT COUNT(*) FROM movies WHERE %s::text LIKE %L", 
+                    filterType, theFilter, sort, order)
+    const rowNums = await db.query(
+        sql_0,
+        []
+    );
+    console.log(rowNums)
     var sql = format("SELECT * FROM movies WHERE %s::text LIKE %L ORDER BY %s %s OFFSET %L LIMIT %L", 
                     filterType, theFilter, sort, order, offset, config.listPerPage)
     const rows = await db.query(
         sql,
         []
     );
+    // console.log("Page 0 to n-1")
+    // console.log(Math.floor((rowNums[0].count)/10))
+    // console.log("Total Page")
+    // console.log(Math.ceil((rowNums[0].count)/10))
+    const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
+    const totalRows = rows.length
     const data = helper.emptyOrRows(rows)
     const meta = {page,
                   sortBy,
                   orderBy,
                   filterBy,
-                  filter
+                  filter,
+                  totalRows,
+                  totalPage
                 };
     return{
         data, 
@@ -28,48 +43,30 @@ async function getMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', filterBy
     }
 }
 
-async function getFilteredMoviesByGenre(page = 1, sortBy = 'movieId', orderBy = 'asc', genre = '%'){
+async function getFilteredMoviesByGenre(page = 1, sortBy = 'movieId', orderBy = 'asc', genre = []){
     const offset = helper.getOffset(page, config.listPerPage);
-    const movie_genre = helper.sanitiseParams(genre);
+    //const movie_genre = helper.sanitiseParams(genre);
     const sort = helper.sanitiseParams(sortBy);
     const order = helper.sanitiseParams(orderBy);
-    var sql = format("SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L)) ORDER BY %s %s OFFSET %L LIMIT %L", 
-                    movie_genre, sort, order, offset, config.listPerPage)
+    const sqlInput = helper.getSql(genre, sort, order, offset, config.listPerPage);
+    const sqlEnhancedInput = helper.getEnhancedSql(genre, sort, order);
+    const rowNums = await db.query(
+        sqlEnhancedInput,
+        []
+    );
     const rows = await db.query(
-        sql,
+        sqlInput,
         []
     );
     const data = helper.emptyOrRows(rows)
+    console.log(rowNums)
+    const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
+    const totalRows = rows.length
     const meta = {page,
                   sortBy,
                   orderBy,
-                  movie_genre
-                };
-    return{
-        data, 
-        meta
-    }
-}
-
-async function getMultipleFilteredMoviesByGenre(page = 1, sortBy = 'movieId', orderBy = 'asc', genre1 = '%', genre2 = '%'){
-    const offset = helper.getOffset(page, config.listPerPage);
-    const genre_1 = helper.sanitiseParams(genre1);
-    const genre_2 = helper.sanitiseParams(genre2);
-    const sort = helper.sanitiseParams(sortBy);
-    const order = helper.sanitiseParams(orderBy);
-    var sql = format("SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L)) " + 
-                    "INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L)) ORDER BY %s %s OFFSET %L LIMIT %L", 
-                    genre_1, genre_2, sort, order, offset, config.listPerPage)
-    const rows = await db.query(
-        sql,
-        []
-    );
-    const data = helper.emptyOrRows(rows)
-    const meta = {page,
-                  sortBy,
-                  orderBy,
-                  genre_1,
-                  genre_2
+                  totalRows,
+                  totalPage
                 };
     return{
         data, 
@@ -81,6 +78,5 @@ async function getMultipleFilteredMoviesByGenre(page = 1, sortBy = 'movieId', or
 
 module.exports = {
     getMovies,
-    getFilteredMoviesByGenre,
-    getMultipleFilteredMoviesByGenre
+    getFilteredMoviesByGenre
 }
