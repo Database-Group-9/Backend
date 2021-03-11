@@ -53,7 +53,6 @@ async function getFilteredMoviesByGenre(page = 1, sortBy = 'movieId', orderBy = 
         []
     );
     const data = helper.emptyOrRows(rows)
-    console.log(rowNums)
     const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
     const totalRows = rows.length
     const meta = {page,
@@ -68,7 +67,7 @@ async function getFilteredMoviesByGenre(page = 1, sortBy = 'movieId', orderBy = 
     }
 }
 
-async function getFilteredMoviesByYearRange(page = 1, sortBy = 'movieId', orderBy = 'asc', years= []){
+async function getFilteredMoviesByYearRange(page = 1, sortBy = 'movieId', orderBy = 'asc', years=[] ){
     const offset = helper.getOffset(page, config.listPerPage);
     const sort = helper.sanitiseParams(sortBy);
     const order = helper.sanitiseParams(orderBy);
@@ -83,7 +82,6 @@ async function getFilteredMoviesByYearRange(page = 1, sortBy = 'movieId', orderB
         []
     );
     const data = helper.emptyOrRows(rows)
-    console.log(rowNums)
     const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
     const totalRows = rows.length
     const meta = {page,

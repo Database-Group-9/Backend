@@ -13,6 +13,9 @@ router.get('/', async function(req, res, next){
 });
 
 router.get('/filteredByGenre', async function(req, res, next){
+    if(typeof req.query.genre === 'string'){
+        req.query.genre = [req.query.genre]
+    }
     try{
         res.json(await movies.getFilteredMoviesByGenre(req.query.page, req.query.sortBy, req.query.orderBy, req.query.genre));
     }
@@ -23,6 +26,9 @@ router.get('/filteredByGenre', async function(req, res, next){
 });
 
 router.get('/filteredByYear', async function(req, res, next){
+    if(typeof req.query.years === 'string'){
+        req.query.years = [req.query.years]
+    }
     try{
         res.json(await movies.getFilteredMoviesByYearRange(req.query.page, req.query.sortBy, req.query.orderBy, req.query.years));
     }

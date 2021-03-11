@@ -17,7 +17,7 @@ function getFilteredMoviesByGenreSql(genreList, sortBy, orderBy, offset, limit){
     if(genreList.length == 0){
         genreList.push('%')
     }
-    var sqlInput = format("SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE '%'))", genreList[0]);
+    var sqlInput = format("SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[0]);
     for(i = 1; i < genreList.length; i++){
         sqlInput = sqlInput.concat(format(" INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[i]))
     }
@@ -41,20 +41,15 @@ function getEnhancedFilteredMoviesByGenreSql(genreList){
 }
 
 function getFilteredMoviesByYearSql(yearList, sortBy, orderBy, offset, limit){
-    console.log(yearList)
-    console.log(yearList.length)
     if(yearList === undefined){
         throw 'Year list does not exist!'
     }
     if(yearList.length == 0){
         yearList.push('0')
     }
-    // if(yearList.length > 2){
-    //     throw 'Year list can only have two elements!'
-    // }
-    console.log('-----------------------------------')
-    console.log(yearList)
-    console.log(yearList.length)
+    if(yearList.length > 2){
+        throw 'Year list can only have up to two elements!'
+    }
     var sqlInput = format("SELECT * from movies WHERE year >= %L", yearList[0]);
     if(yearList.length == 2){
         sqlInput = sqlInput.concat(format(" AND year <= %L", yearList[1]))
@@ -69,6 +64,9 @@ function getEnhancedFilteredMoviesByYearSql(yearList){
     }
     if(yearList.length == 0){
         yearList.push('%')
+    }
+    if(yearList.length > 2){
+        throw 'Year list can only have up to two elements!'
     }
     var sqlInput = format("SELECT COUNT(*) from movies WHERE year >= %L", yearList[0]);
     if(yearList.length == 2){
