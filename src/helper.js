@@ -10,7 +10,7 @@ function sanitiseParams(params){
     }
 }
 
-function getSql(genreList, sortBy, orderBy, offset, limit){
+function getFilteredMoviesByGenreSql(genreList, sortBy, orderBy, offset, limit){
     if(genreList === undefined){
         throw 'Genre list does not exist!'
     }
@@ -25,7 +25,7 @@ function getSql(genreList, sortBy, orderBy, offset, limit){
     return finalSql
 }
 
-function getEnhancedSql(genreList, sortBy, orderBy){
+function getEnhancedFilteredMoviesByGenreSql(genreList){
     if(genreList === undefined){
         throw 'Genre list does not exist!'
     }
@@ -40,6 +40,43 @@ function getEnhancedSql(genreList, sortBy, orderBy){
     return sqlInput
 }
 
+function getFilteredMoviesByYearSql(yearList, sortBy, orderBy, offset, limit){
+    console.log(yearList)
+    console.log(yearList.length)
+    if(yearList === undefined){
+        throw 'Year list does not exist!'
+    }
+    if(yearList.length == 0){
+        yearList.push('0')
+    }
+    // if(yearList.length > 2){
+    //     throw 'Year list can only have two elements!'
+    // }
+    console.log('-----------------------------------')
+    console.log(yearList)
+    console.log(yearList.length)
+    var sqlInput = format("SELECT * from movies WHERE year >= %L", yearList[0]);
+    if(yearList.length == 2){
+        sqlInput = sqlInput.concat(format(" AND year <= %L", yearList[1]))
+    }
+    var finalSql = sqlInput.concat(format(" ORDER BY %s %s OFFSET %L LIMIT %L", sortBy, orderBy, offset, limit));
+    return finalSql
+}
+
+function getEnhancedFilteredMoviesByYearSql(yearList){
+    if(yearList === undefined){
+        throw 'Year list does not exist!'
+    }
+    if(yearList.length == 0){
+        yearList.push('%')
+    }
+    var sqlInput = format("SELECT COUNT(*) from movies WHERE year >= %L", yearList[0]);
+    if(yearList.length == 2){
+        sqlInput = sqlInput.concat(format(" AND year <= %L", yearList[1]))
+    }
+    return sqlInput
+}
+
 function emptyOrRows(rows){
     if(!rows){
         return [];
@@ -49,8 +86,10 @@ function emptyOrRows(rows){
 
 module.exports = {
     getOffset,
-    getSql,
-    getEnhancedSql,
+    getFilteredMoviesByGenreSql,
+    getEnhancedFilteredMoviesByGenreSql,
+    getFilteredMoviesByYearSql,
+    getEnhancedFilteredMoviesByYearSql,
     emptyOrRows,
     sanitiseParams
 }

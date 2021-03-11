@@ -9,18 +9,28 @@ async function getTags(page = 1, sortBy = 'tagId', orderBy = 'asc', filterBy = '
     const theFilter = helper.sanitiseParams(filter);
     const sort = helper.sanitiseParams(sortBy);
     const order = helper.sanitiseParams(orderBy);
+    var sql_0 = format("SELECT COUNT(*) FROM tags WHERE %s::text LIKE %L", 
+                    filterType, theFilter)
+    const rowNums = await db.query(
+        sql_0,
+        []
+    );
     var sql = format("SELECT * FROM tags WHERE %s::text LIKE %L ORDER BY %s %s OFFSET %L LIMIT %L", 
                     filterType, theFilter, sort, order, offset, config.listPerPage)
     const rows = await db.query(
         sql,
         []
     );
+    const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
+    const totalRows = rows.length
     const data = helper.emptyOrRows(rows)
     const meta = {page,
                   sortBy,
                   orderBy,
                   filterBy,
-                  filter
+                  filter,
+                  totalRows,
+                  totalPage
                 };
     return{
         data, 
