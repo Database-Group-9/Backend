@@ -75,6 +75,20 @@ function getEnhancedFilteredMoviesByYearSql(yearList){
     return sqlInput
 }
 
+function getRatingsForMultipleGenresSql(genreList){
+    if(genreList == undefined){
+        throw `Genre list does not exist!`
+    }
+    if(genreList.length == 0){
+        throw `Genre list is empty`
+    }
+    var sqlInput = format("SELECT AVG(c.avg) FROM (SELECT b.genreId, AVG(b.avg) FROM (SELECT movie_genre.*, a.avg AS avg FROM movie_genre INNER JOIN (SELECT movieId, AVG(rating) AS avg FROM ratings GROUP BY movieId) a ON a.movieId = movie_genre.movieiD ORDER BY genreid asc) b GROUP BY genreid) c WHERE c.genreid = %L", genreList[0])
+    for(i = 1; i < genreList.length; i++){
+        sqlInput = sqlInput.concat(format(" OR c.genreid = %L", genreList[i]))
+    }
+    return sqlInput
+}
+
 function emptyOrRows(rows){
     if(!rows){
         return [];
@@ -88,6 +102,7 @@ module.exports = {
     getEnhancedFilteredMoviesByGenreSql,
     getFilteredMoviesByYearSql,
     getEnhancedFilteredMoviesByYearSql,
+    getRatingsForMultipleGenresSql,
     emptyOrRows,
     sanitiseParams
 }
