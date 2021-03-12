@@ -38,5 +38,24 @@ router.get('/filteredByYear', async function(req, res, next){
     }
 });
 
+router.get('/popular', async function(req, res, next){
+    try{
+        res.json(await movies.getPopularMovies(req.query.page, req.query.orderBy));
+    }
+    catch(err){
+        console.error(`Error while retrieving popular movies `, err.message);
+        next(err);
+    }
+});
+
+router.get('/polarising', async function(req, res, next){
+    try{
+        res.json(await movies.getPolarisingMovies(req.query.page, req.query.orderBy, req.query.ratingsCount));
+    }
+    catch(err){
+        console.error(`Error while retrieving most polarising movies `, err.message);
+        next(err);
+    }
+});
 
 module.exports = router;
