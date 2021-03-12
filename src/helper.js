@@ -17,7 +17,7 @@ function getFilteredMoviesByGenreSql(genreList, sortBy, orderBy, offset, limit){
     if(genreList.length == 0){
         genreList.push('%')
     }
-    var sqlInput = format("SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[0]);
+    var sqlInput = format("SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId::text LIKE %L)", genreList[0]);
     for(i = 1; i < genreList.length; i++){
         sqlInput = sqlInput.concat(format(" INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[i]))
     }
@@ -32,7 +32,7 @@ function getEnhancedFilteredMoviesByGenreSql(genreList){
     if(genreList.length == 0){
         genreList.push('%')
     }
-    var sqlInput = format("SELECT COUNT(b.movieId) FROM (SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[0]);
+    var sqlInput = format("SELECT COUNT(b.movieId) FROM (SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId::text LIKE %L)", genreList[0]);
     for(i = 1; i < genreList.length; i++){
         sqlInput = sqlInput.concat(format(" INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[i]))
     }
