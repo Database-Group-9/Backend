@@ -89,6 +89,46 @@ function getRatingsForMultipleGenresSql(genreList){
     return sqlInput
 }
 
+function segment(res){
+    totalRows = 0
+    like = 0
+    dislike = 0
+    overallLike = 0
+    overallNeutral = 0
+    overallDislike = 0
+    for(i = 0; i < res.length; i++){
+        totalRows++
+        if (res[i]["rating"] > 2.5){
+            like++
+        }
+        else if (res[i]["rating"] <= 2.5){
+            dislike++
+        }
+
+        if (res[i]["diff"] > 0.5){
+            overallLike++
+        }
+        else if (res[i]["diff"] < -0.5){
+            overallDislike++
+        }
+        else {
+            overallNeutral++
+        }
+    }
+    likePercent = (like / totalRows) * 100
+    dislikePercent = (dislike / totalRows) * 100
+    overallLikePercent = (overallLike / totalRows) * 100
+    overallNeutralPercent = (overallNeutral / totalRows) * 100
+    overallDislikePercent = (overallDislike / totalRows) * 100
+
+    return {"likePercent": likePercent, 
+        "dislikePercent":dislikePercent, 
+        "overallLikePercent":overallLikePercent, 
+        "overallNeutralPercent":overallNeutralPercent, 
+        "overallDislikePercent":overallDislikePercent
+    }
+}
+
 function emptyOrRows(rows){
     if(!rows){
         return [];
@@ -104,5 +144,6 @@ module.exports = {
     getEnhancedFilteredMoviesByYearSql,
     getRatingsForMultipleGenresSql,
     emptyOrRows,
+    segment,
     sanitiseParams
 }

@@ -75,8 +75,6 @@ async function getRatingsForGenres(genreId=[]){
 }
 
 async function getRatingsForAllGenres(orderBy = 'asc', sortBy = 'genreId'){
-    //The sql:
-    // select b.genreId, avg(b.avg) from (select movie_genre.*, a.avg as avg from movie_genre inner join (select movieId, avg(rating) as avg from ratings group by movieId) a on a.movieId = movie_genre.movieiD ORDER BY genreid asc) b group by genreid;
     const sort = helper.sanitiseParams(sortBy);
     const order = helper.sanitiseParams(orderBy);
     var sql = format("SELECT b.genreId, AVG(b.avg) FROM (SELECT movie_genre.*, a.avg AS avg FROM movie_genre INNER JOIN (select movieId, AVG(rating) AS avg FROM ratings GROUP BY movieId) a ON a.movieId = movie_genre.movieiD ORDER BY genreid %s) b GROUP BY %s", 

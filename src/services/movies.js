@@ -138,7 +138,6 @@ async function getPolarisingMovies(page = 1, orderBy = 'desc', ratingsCount = 20
                         "(SELECT movieId, STDDEV(rating) AS std FROM ratings GROUP BY movieId HAVING COUNT(movieId) > %s)a " + 
                         "ON a.movieId = movies.movieId ORDER BY std %s)b;", 
                         count, order)
-    console.log(sql_0)
     const rowNums = await db.query(
         sql_0,
         []
