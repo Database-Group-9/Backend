@@ -10,6 +10,7 @@ var tagsRouter = require('./routes/tags');
 var totalRowsRouter = require('./routes/totalRows');
 var genresRouter = require('./routes/genres');
 var yearsRouter = require('./routes/years');
+var movieRouter = require('./routes/movie');
 
 var app = express();
 var cors = require('cors')
@@ -35,5 +36,6 @@ app.use('/tags', tagsRouter);
 app.use('/totalRows', totalRowsRouter);
 app.use('/genres', genresRouter);
 app.use('/years', yearsRouter);
+app.use('/movie', movieRouter);
 
 module.exports = app;
