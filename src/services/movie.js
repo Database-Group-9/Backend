@@ -30,15 +30,16 @@ async function getMovie(movieId){
         data[1]["tags"].push(item["tag"])
     });
 
-    var sql_2 = format("SELECT genre FROM genres WHERE genreId IN (SELECT DISTINCT(genreId) FROM movie_genre WHERE movieId=%s)",movie);
+    var sql_2 = format("SELECT genre, genreId FROM genres WHERE genreId IN (SELECT DISTINCT(genreId) FROM movie_genre WHERE movieId=%s)",movie);
     const rows2 = await db.query(
         sql_2,
         []
     )
     res = helper.emptyOrRows(rows2);
-    data.push({"genres": []})
+    data.push({"genres": [], "genreId": []})
     res.map((item) => {
-        data[2]["genres"].push(item["genre"])
+        data[2]["genres"].push(item["genre"]);
+        data[2]["genreId"].push(item["genreid"]);
     });
 
     var sql_3 = format("SELECT t.range AS range, COUNT(*) AS count FROM (SELECT CASE WHEN rating <= 5 AND rating > 4 THEN '4-5' WHEN rating <= 4 AND rating > 3 THEN '3-4' WHEN rating <= 3 AND rating > 2 THEN '2-3' WHEN rating <= 2 AND rating > 1 THEN '1-2' ELSE '0-1' END AS range FROM ratings WHERE movieId=%s)t GROUP BY t.range", movie);
