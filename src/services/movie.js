@@ -54,6 +54,8 @@ async function getMovie(movieId){
         data[3]["ratings"].push([item['range'], item['count']])
     });
 
+    
+
     const meta = {movieId}
     return{
         data,
