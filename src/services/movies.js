@@ -3,13 +3,13 @@ const config = require('../config');
 const helper = require('../helper');
 var format = require('pg-format');
 
-async function getMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', filterBy = 'year', filter = '%'){
+async function getMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', filterBy = 'title', filter = '%'){
     const offset = helper.getOffset(page, config.listPerPage);
     const filterType = helper.sanitiseParams(filterBy);
     const theFilter = helper.sanitiseParams(filter);
     const sort = helper.sanitiseParams(sortBy);
     const order = helper.sanitiseParams(orderBy);
-    var sql_0 = format("SELECT COUNT(*) FROM movies WHERE %s::text LIKE %L", 
+    var sql_0 = format("SELECT COUNT(*) FROM movies WHERE %s ILIKE '%%%s%%'", 
                     filterType, theFilter)
     const rowNums = await db.query(
         sql_0,

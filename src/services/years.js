@@ -16,13 +16,13 @@ async function getYears(page = 1, sortBy = 'year', orderBy = 'asc', filterBy = '
         sql_0,
         []
     );
-    var sql = format("SELECT DISTINCT(year) FROM movies WHERE %s::text LIKE %L ORDER BY %s %s OFFSET %L LIMIT %L", 
+    var sql = format("SELECT DISTINCT(year) FROM movies WHERE %s::text LIKE %L ORDER BY %s %s", 
                     filterType, theFilter, sort, order, offset, config.listPerPage)
     const rows = await db.query(
         sql,
         []
     );
-    const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
+    // const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
     const totalRows = rows.length
     const data = helper.emptyOrRows(rows)
     const meta = {page,
@@ -30,8 +30,8 @@ async function getYears(page = 1, sortBy = 'year', orderBy = 'asc', filterBy = '
                   orderBy,
                   filterBy,
                   filter,
-                  totalRows,
-                  totalPage
+                  totalRows
+                //   totalPage
                 };
     return{
         data, 
