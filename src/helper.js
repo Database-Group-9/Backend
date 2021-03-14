@@ -27,16 +27,11 @@ function getFilteredMoviesSql(genreList, yearList, sortBy, orderBy, offset, limi
     for(i = 1; i < genreList.length; i++){
         sqlInput = sqlInput.concat(format(" INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId::text LIKE %L)", genreList[i]))
     }
-    // console.log(sqlInput)
-    // console.log(yearList)
     sqlInput = sqlInput.concat(format(" AND year >= %L", yearList[0]));
     if(yearList.length == 2){
         sqlInput = sqlInput.concat(format(" AND year <= %L", yearList[1]))
     }
-    // console.log(sqlInput)
     var finalSql = sqlInput.concat(format(" ORDER BY %s %s OFFSET %L LIMIT %L", sortBy, orderBy, offset, limit));
-    // console.log("HERE DUMBASS")
-    // console.log(finalSql);
     return finalSql;
 }
 
@@ -72,11 +67,12 @@ function getRatingsForMultipleTagsSql(tagList){
     if(tagList.length == 0){
         throw `Tags list is empty`
     }
-    var sqlInput = format("SELECT AVG(c.avg) FROM (SELECT b.genreId, AVG(b.avg) FROM (SELECT movie_genre.*, a.avg AS avg FROM movie_genre INNER JOIN (SELECT movieId, AVG(rating) AS avg FROM ratings GROUP BY movieId) a ON a.movieId = movie_genre.movieiD ORDER BY genreid asc) b GROUP BY genreid) c WHERE c.genreid = %L", genreList[0])
+    var sqlInput = format("SELECT AVG(avg) FROM (SELECT DISTINCT movieid FROM tags WHERE tag = %L", tagList[0])
     for(i = 1; i < tagList.length; i++){
-        sqlInput = sqlInput.concat(format(" OR c.genreid = %L", genreList[i]))
+        sqlInput = sqlInput.concat(format(" OR tag = %L", tagList[i]))
     }
-    return sqlInput
+    var finalSql = sqlInput.concat(format(") a JOIN (SELECT movieid, avg(rating) FROM ratings as c GROUP BY c.movieid)c ON a.movieid=c.movieid"));
+    return finalSql
 }
 
 function getRatingsForMultipleGenresSql(genreList){

@@ -38,14 +38,8 @@ async function getRatings(page = 1, sortBy = 'ratingId', orderBy = 'asc', filter
     }
 }
 
-async function getRatingsForTag(tag){
-    if(tag == null){
-        throw `Please insert tag `
-    }
-    const theTag = helper.sanitiseParams(tag);
-    var sql = format("SELECT AVG(avg) FROM (SELECT DISTINCT movieid FROM tags WHERE tag = %L) a JOIN (SELECT movieid, avg(rating) FROM ratings as c GROUP BY c.movieid)c ON a.movieid=c.movieid", 
-                    theTag)
-    console.log(sql)
+async function getRatingsForTag(tag=[]){
+    var sql = helper.getRatingsForMultipleTagsSql(tag);
     const rows = await db.query(
         sql,
         []

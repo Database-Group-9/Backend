@@ -13,6 +13,9 @@ router.get('/', async function(req, res, next){
 });
 
 router.get('/tag', async function(req, res, next){
+    if(typeof req.query.tag === 'string'){
+        req.query.tag = [req.query.tag]
+    }
     try{
         res.json(await ratings.getRatingsForTag(req.query.tag));
     }
