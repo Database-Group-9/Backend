@@ -17,6 +17,7 @@ async function getMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', filterBy
     );
     var sql = format("SELECT * FROM movies WHERE %s ILIKE '%%%s%%' ORDER BY %s %s OFFSET %L LIMIT %L", 
                     filterType, theFilter, sort, order, offset, config.listPerPage)
+    console.log(sql)
     const rows = await db.query(
         sql,
         []

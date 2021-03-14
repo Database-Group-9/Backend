@@ -12,6 +12,19 @@ router.get('/', async function(req, res, next){
     }
 });
 
+router.get('/predict', async function(req, res, next){
+    if(typeof req.query.tag === 'string'){
+        req.query.tag = [req.query.tag]
+    }
+    try{
+        res.json(await ratings.getRatingsForGenreAndTag(req.query.tag, req.query.genreId));
+    }
+    catch(err){
+        console.error(`Error while retrieving ratings for prediction `, err.message);
+        next(err);
+    }
+});
+
 router.get('/tag', async function(req, res, next){
     if(typeof req.query.tag === 'string'){
         req.query.tag = [req.query.tag]

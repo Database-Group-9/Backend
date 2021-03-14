@@ -1,4 +1,5 @@
 var format = require('pg-format');
+const db = require('./services/db');
 
 function getOffset(currentPage = 1, listPerPage){
     return (currentPage - 1) * [listPerPage];
@@ -58,6 +59,44 @@ function getEnhancedFilteredMoviesSql(genreList, yearList){
     }
     sqlInput = sqlInput.concat(")b")
     return sqlInput
+}
+
+function getRatingsSql(tagList, genreId){
+    if(tagList == undefined){
+        throw `Tags list does not exist!`
+    }
+    if(genreId == undefined){
+        throw `Genres list does not exist!`
+    }
+    if(tagList.length == 0){
+        tagList.push('%')
+    }
+    if(genreId.length == 0){
+        genreId.push('0')
+    }
+    var tagSqlInput = format("SELECT COUNT(avg), SUM(avg) FROM (SELECT DISTINCT movieid FROM tags WHERE tag ILIKE %L", tagList[0])
+    for(i = 1; i < tagList.length; i++){
+        tagSqlInput = tagSqlInput.concat(format(" OR tag ILIKE %L", tagList[i]))
+    }
+    tagSqlInput = tagSqlInput.concat(format(") a JOIN (SELECT movieid, avg(rating) FROM ratings as c GROUP BY c.movieid)c ON a.movieid=c.movieid"));
+
+    var genreSqlInput = format("SELECT COUNT(d.count), SUM(d.avg) FROM (SELECT COUNT(c.movieId), AVG(c.avg) FROM (SELECT b.movieId, b.genreId, AVG(b.avg) FROM (SELECT movie_genre.*, a.avg AS avg FROM movie_genre INNER JOIN (SELECT movieId, AVG(rating) AS avg FROM ratings GROUP BY movieId) a ON a.movieId = movie_genre.movieiD ORDER BY genreid asc) b GROUP BY b.movieId, b.genreid) c WHERE c.genreid = %L", genreId[0])
+    for(i = 1; i < genreId.length; i++){
+        genreSqlInput = genreSqlInput.concat(format(" OR c.genreid = %L", genreId[i]))
+    }
+    genreSqlInput = genreSqlInput.concat(format(" GROUP BY c.movieid) d"))
+
+    var intersectSql = format("SELECT COUNT(a.movieId), SUM(CAST(a.avgrating AS float)) FROM (SELECT movieid, avgrating FROM movies WHERE movieid IN (SELECT movieid FROM movie_genre WHERE genreid = %L", genreId[0])
+    for(i = 1; i < tagList.length; i++){
+        intersectSql = intersectSql.concat(format("OR genreid = %L", genreId[i]))
+    }
+    intersectSql = intersectSql.concat(format(") INTERSECT SELECT movieid, avgrating FROM movies WHERE movieid IN (SELECT movieid FROM tags WHERE tag ILIKE %L", tagList[0]))
+    for(i = 1; i < tagList.length; i++){
+        tagSqlInput = tagSqlInput.concat(format(" OR tag ILIKE %L", tagList[i]))
+    }
+    intersectSql = intersectSql.concat(format(")) a"));
+
+    return [tagSqlInput, genreSqlInput, intersectSql]
 }
 
 function getRatingsForMultipleTagsSql(tagList){
@@ -138,6 +177,7 @@ function emptyOrRows(rows){
 
 module.exports = {
     getOffset,
+    getRatingsSql,
     getRatingsForMultipleGenresSql,
     getRatingsForMultipleTagsSql,
     getFilteredMoviesSql,
