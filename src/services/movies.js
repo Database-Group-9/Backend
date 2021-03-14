@@ -15,7 +15,7 @@ async function getMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', filterBy
         sql_0,
         []
     );
-    var sql = format("SELECT * FROM movies WHERE %s::text LIKE %L ORDER BY %s %s OFFSET %L LIMIT %L", 
+    var sql = format("SELECT * FROM movies WHERE %s ILIKE '%%%s%%' ORDER BY %s %s OFFSET %L LIMIT %L", 
                     filterType, theFilter, sort, order, offset, config.listPerPage)
     const rows = await db.query(
         sql,
@@ -38,12 +38,13 @@ async function getMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', filterBy
     }
 }
 
-async function getFilteredMoviesByGenre(page = 1, sortBy = 'movieId', orderBy = 'asc', genre = []){
+async function getFilteredMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', genre = [], years=[]){
     const offset = helper.getOffset(page, config.listPerPage);
     const sort = helper.sanitiseParams(sortBy);
     const order = helper.sanitiseParams(orderBy);
-    const sqlInput = helper.getFilteredMoviesByGenreSql(genre, sort, order, offset, config.listPerPage);
-    const sqlEnhancedInput = helper.getEnhancedFilteredMoviesByGenreSql(genre);
+    const sqlInput = helper.getFilteredMoviesSql(genre, years, sort, order, offset, config.listPerPage);
+    const sqlEnhancedInput = helper.getEnhancedFilteredMoviesSql(genre, years);
+    console.log(sqlInput)
     const rowNums = await db.query(
         sqlEnhancedInput,
         []
@@ -67,34 +68,6 @@ async function getFilteredMoviesByGenre(page = 1, sortBy = 'movieId', orderBy = 
     }
 }
 
-async function getFilteredMoviesByYearRange(page = 1, sortBy = 'movieId', orderBy = 'asc', years=[] ){
-    const offset = helper.getOffset(page, config.listPerPage);
-    const sort = helper.sanitiseParams(sortBy);
-    const order = helper.sanitiseParams(orderBy);
-    const sqlInput = helper.getFilteredMoviesByYearSql(years, sort, order, offset, config.listPerPage);
-    const sqlEnhancedInput = helper.getEnhancedFilteredMoviesByYearSql(years);
-    const rowNums = await db.query(
-        sqlEnhancedInput,
-        []
-    );
-    const rows = await db.query(
-        sqlInput,
-        []
-    );
-    const data = helper.emptyOrRows(rows)
-    const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
-    const totalRows = rows.length
-    const meta = {page,
-                  sortBy,
-                  orderBy,
-                  totalRows,
-                  totalPage
-                };
-    return{
-        data, 
-        meta
-    }
-}
 
 async function getPopularMovies(page = 1, orderBy = 'desc'){
     const offset = helper.getOffset(page, config.listPerPage);
@@ -167,8 +140,7 @@ async function getPolarisingMovies(page = 1, orderBy = 'desc', ratingsCount = 20
 
 module.exports = {
     getMovies,
-    getFilteredMoviesByGenre,
-    getFilteredMoviesByYearRange,
+    getFilteredMovies,
     getPopularMovies,
     getPolarisingMovies
 }
