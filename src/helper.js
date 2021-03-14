@@ -17,9 +17,9 @@ function getFilteredMoviesByGenreSql(genreList, sortBy, orderBy, offset, limit){
     if(genreList.length == 0){
         genreList.push('%')
     }
-    var sqlInput = format("SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[0]);
+    var sqlInput = format("SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId::text LIKE %L)", genreList[0]);
     for(i = 1; i < genreList.length; i++){
-        sqlInput = sqlInput.concat(format(" INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[i]))
+        sqlInput = sqlInput.concat(format(" INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId::text LIKE %L)", genreList[i]))
     }
     var finalSql = sqlInput.concat(format(" ORDER BY %s %s OFFSET %L LIMIT %L", sortBy, orderBy, offset, limit));
     return finalSql
@@ -32,9 +32,9 @@ function getEnhancedFilteredMoviesByGenreSql(genreList){
     if(genreList.length == 0){
         genreList.push('%')
     }
-    var sqlInput = format("SELECT COUNT(b.movieId) FROM (SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[0]);
+    var sqlInput = format("SELECT COUNT(b.movieId) FROM (SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId::text LIKE %L)", genreList[0]);
     for(i = 1; i < genreList.length; i++){
-        sqlInput = sqlInput.concat(format(" INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId IN (SELECT genreId from genres WHERE genre::text LIKE %L))", genreList[i]))
+        sqlInput = sqlInput.concat(format(" INTERSECT SELECT * from movies WHERE movieId IN (SELECT movieId from movie_genre WHERE genreId::text LIKE %L)", genreList[i]))
     }
     sqlInput = sqlInput.concat(")b")
     return sqlInput
@@ -75,6 +75,60 @@ function getEnhancedFilteredMoviesByYearSql(yearList){
     return sqlInput
 }
 
+function getRatingsForMultipleGenresSql(genreList){
+    if(genreList == undefined){
+        throw `Genre list does not exist!`
+    }
+    if(genreList.length == 0){
+        throw `Genre list is empty`
+    }
+    var sqlInput = format("SELECT AVG(c.avg) FROM (SELECT b.genreId, AVG(b.avg) FROM (SELECT movie_genre.*, a.avg AS avg FROM movie_genre INNER JOIN (SELECT movieId, AVG(rating) AS avg FROM ratings GROUP BY movieId) a ON a.movieId = movie_genre.movieiD ORDER BY genreid asc) b GROUP BY genreid) c WHERE c.genreid = %L", genreList[0])
+    for(i = 1; i < genreList.length; i++){
+        sqlInput = sqlInput.concat(format(" OR c.genreid = %L", genreList[i]))
+    }
+    return sqlInput
+}
+
+function segment(res){
+    totalRows = 0
+    like = 0
+    dislike = 0
+    overallLike = 0
+    overallNeutral = 0
+    overallDislike = 0
+    for(i = 0; i < res.length; i++){
+        totalRows++
+        if (res[i]["rating"] > 2.5){
+            like++
+        }
+        else if (res[i]["rating"] <= 2.5){
+            dislike++
+        }
+
+        if (res[i]["diff"] > 0.5){
+            overallLike++
+        }
+        else if (res[i]["diff"] < -0.5){
+            overallDislike++
+        }
+        else {
+            overallNeutral++
+        }
+    }
+    likePercent = (like / totalRows) * 100
+    dislikePercent = (dislike / totalRows) * 100
+    overallLikePercent = (overallLike / totalRows) * 100
+    overallNeutralPercent = (overallNeutral / totalRows) * 100
+    overallDislikePercent = (overallDislike / totalRows) * 100
+
+    return {"likePercent": likePercent, 
+        "dislikePercent":dislikePercent, 
+        "overallLikePercent":overallLikePercent, 
+        "overallNeutralPercent":overallNeutralPercent, 
+        "overallDislikePercent":overallDislikePercent
+    }
+}
+
 function emptyOrRows(rows){
     if(!rows){
         return [];
@@ -88,6 +142,8 @@ module.exports = {
     getEnhancedFilteredMoviesByGenreSql,
     getFilteredMoviesByYearSql,
     getEnhancedFilteredMoviesByYearSql,
+    getRatingsForMultipleGenresSql,
     emptyOrRows,
+    segment,
     sanitiseParams
 }

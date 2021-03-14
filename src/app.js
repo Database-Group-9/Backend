@@ -31,11 +31,12 @@ app.use(function(req, res, next){
 
 app.use('/', indexRouter);
 app.use('/movies', moviesRouter);
+app.use('/movie', movieRouter);
 app.use('/ratings', ratingsRouter);
 app.use('/tags', tagsRouter);
 app.use('/totalRows', totalRowsRouter);
 app.use('/genres', genresRouter);
 app.use('/years', yearsRouter);
-app.use('/movie', movieRouter);
+
 
 module.exports = app;
