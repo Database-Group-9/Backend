@@ -69,7 +69,7 @@ function getRatingsSql(tagList, genreId){
         throw `Genres list does not exist!`
     }
     if(tagList.length == 0){
-        tagList.push('%')
+        tagList.push('')
     }
     if(genreId.length == 0){
         genreId.push('0')
@@ -86,7 +86,7 @@ function getRatingsSql(tagList, genreId){
     }
     genreSqlInput = genreSqlInput.concat(format(" GROUP BY c.movieid) d"))
 
-    var intersectSql = format("SELECT COUNT(a.movieId), SUM(CAST(a.avgrating AS float)) FROM (SELECT movieid, avgrating FROM movies WHERE movieid IN (SELECT movieid FROM movie_genre WHERE genreid = %L", genreId[0])
+    var intersectSql = format("SELECT COUNT(a.movieId), SUM(a.avgrating) FROM (SELECT movieid, avgrating FROM movies WHERE movieid IN (SELECT movieid FROM movie_genre WHERE genreid = %L", genreId[0])
     for(i = 1; i < tagList.length; i++){
         intersectSql = intersectSql.concat(format("OR genreid = %L", genreId[i]))
     }
@@ -99,34 +99,34 @@ function getRatingsSql(tagList, genreId){
     return [tagSqlInput, genreSqlInput, intersectSql]
 }
 
-function getRatingsForMultipleTagsSql(tagList){
-    if(tagList == undefined){
-        throw `Tags list does not exist!`
-    }
-    if(tagList.length == 0){
-        throw `Tags list is empty`
-    }
-    var sqlInput = format("SELECT AVG(avg) FROM (SELECT DISTINCT movieid FROM tags WHERE tag = %L", tagList[0])
-    for(i = 1; i < tagList.length; i++){
-        sqlInput = sqlInput.concat(format(" OR tag = %L", tagList[i]))
-    }
-    var finalSql = sqlInput.concat(format(") a JOIN (SELECT movieid, avg(rating) FROM ratings as c GROUP BY c.movieid)c ON a.movieid=c.movieid"));
-    return finalSql
-}
+// function getRatingsForMultipleTagsSql(tagList){
+//     if(tagList == undefined){
+//         throw `Tags list does not exist!`
+//     }
+//     if(tagList.length == 0){
+//         throw `Tags list is empty`
+//     }
+//     var sqlInput = format("SELECT AVG(avg) FROM (SELECT DISTINCT movieid FROM tags WHERE tag = %L", tagList[0])
+//     for(i = 1; i < tagList.length; i++){
+//         sqlInput = sqlInput.concat(format(" OR tag = %L", tagList[i]))
+//     }
+//     var finalSql = sqlInput.concat(format(") a JOIN (SELECT movieid, avg(rating) FROM ratings as c GROUP BY c.movieid)c ON a.movieid=c.movieid"));
+//     return finalSql
+// }
 
-function getRatingsForMultipleGenresSql(genreList){
-    if(genreList == undefined){
-        throw `Genre list does not exist!`
-    }
-    if(genreList.length == 0){
-        throw `Genre list is empty`
-    }
-    var sqlInput = format("SELECT AVG(c.avg) FROM (SELECT b.genreId, AVG(b.avg) FROM (SELECT movie_genre.*, a.avg AS avg FROM movie_genre INNER JOIN (SELECT movieId, AVG(rating) AS avg FROM ratings GROUP BY movieId) a ON a.movieId = movie_genre.movieiD ORDER BY genreid asc) b GROUP BY genreid) c WHERE c.genreid = %L", genreList[0])
-    for(i = 1; i < genreList.length; i++){
-        sqlInput = sqlInput.concat(format(" OR c.genreid = %L", genreList[i]))
-    }
-    return sqlInput
-}
+// function getRatingsForMultipleGenresSql(genreList){
+//     if(genreList == undefined){
+//         throw `Genre list does not exist!`
+//     }
+//     if(genreList.length == 0){
+//         throw `Genre list is empty`
+//     }
+//     var sqlInput = format("SELECT AVG(c.avg) FROM (SELECT b.genreId, AVG(b.avg) FROM (SELECT movie_genre.*, a.avg AS avg FROM movie_genre INNER JOIN (SELECT movieId, AVG(rating) AS avg FROM ratings GROUP BY movieId) a ON a.movieId = movie_genre.movieiD ORDER BY genreid asc) b GROUP BY genreid) c WHERE c.genreid = %L", genreList[0])
+//     for(i = 1; i < genreList.length; i++){
+//         sqlInput = sqlInput.concat(format(" OR c.genreid = %L", genreList[i]))
+//     }
+//     return sqlInput
+// }
 
 function segment(res){
     totalRows = 0
@@ -178,8 +178,8 @@ function emptyOrRows(rows){
 module.exports = {
     getOffset,
     getRatingsSql,
-    getRatingsForMultipleGenresSql,
-    getRatingsForMultipleTagsSql,
+    // getRatingsForMultipleGenresSql,
+    // getRatingsForMultipleTagsSql,
     getFilteredMoviesSql,
     getEnhancedFilteredMoviesSql,
     emptyOrRows,

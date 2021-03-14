@@ -25,28 +25,28 @@ router.get('/predict', async function(req, res, next){
     }
 });
 
-router.get('/tag', async function(req, res, next){
-    if(typeof req.query.tag === 'string'){
-        req.query.tag = [req.query.tag]
-    }
-    try{
-        res.json(await ratings.getRatingsForTag(req.query.tag));
-    }
-    catch(err){
-        console.error(`Error while retrieving ratings for tag `, err.message);
-        next(err);
-    }
-});
+// router.get('/tag', async function(req, res, next){
+//     if(typeof req.query.tag === 'string'){
+//         req.query.tag = [req.query.tag]
+//     }
+//     try{
+//         res.json(await ratings.getRatingsForTag(req.query.tag));
+//     }
+//     catch(err){
+//         console.error(`Error while retrieving ratings for tag `, err.message);
+//         next(err);
+//     }
+// });
 
-router.get('/genre', async function(req, res, next){
-    try{
-        res.json(await ratings.getRatingsForGenres(req.query.genreId));
-    }
-    catch(err){
-        console.error(`Error while retrieving ratings for genres `, err.message);
-        next(err);
-    }
-});
+// router.get('/genre', async function(req, res, next){
+//     try{
+//         res.json(await ratings.getRatingsForGenres(req.query.genreId));
+//     }
+//     catch(err){
+//         console.error(`Error while retrieving ratings for genres `, err.message);
+//         next(err);
+//     }
+// });
 
 router.get('/allGenres', async function(req, res, next){
     try{

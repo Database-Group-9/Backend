@@ -66,6 +66,8 @@ async function getRatingsForGenreAndTag(tag=[], genreId=[]){
     // const data2 = ((data0[0].avg * parseInt(data0[0].count)) + (data1[0].avg * parseInt(data1[0].count))) / (parseInt(data0[0].count) + parseInt(data1[0].count))
     const average = (tags[0].sum + genreIds[0].sum - intersect[0].sum) / (parseInt(tags[0].count) + parseInt(genreIds[0].count) - intersect[0].count)
     return{
+        tags,
+        genreIds,
         average
     }
 }
