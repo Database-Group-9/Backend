@@ -58,10 +58,22 @@ async function getMovie(movieId){
         sql_4,
         []
     )
+    
+    var sql_5 = format("SELECT AVG(rating), tag FROM (SELECT * FROM ratings WHERE userid IN (SELECT userid FROM tags AS a WHERE movieid= %L))c JOIN (SELECT userid, tag from tags WHERE movieid = %L)b ON c.userid = b.userid WHERE movieid = %L GROUP BY tag;", movieId, movieId, movieId);
+    const rows5 = await db.query(
+        sql_5,
+        []
+    )
+    
     res = helper.emptyOrRows(rows4);
     allPercent = helper.segment(res)
     data.push(allPercent);
-
+    res = helper.emptyOrRows(rows5);
+    console.log(res)
+    data.push({"tag_ratings": []})
+    res.map((item) => {
+        data[5]["tag_ratings"].push([item['avg'], item['tag']])
+    });
     const meta = {movieId}
     return{
         data,
