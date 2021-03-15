@@ -45,7 +45,6 @@ async function getFilteredMovies(page = 1, sortBy = 'movieId', orderBy = 'asc', 
     const order = helper.sanitiseParams(orderBy);
     const sqlInput = helper.getFilteredMoviesSql(genre, years, sort, order, offset, config.listPerPage);
     const sqlEnhancedInput = helper.getEnhancedFilteredMoviesSql(genre, years);
-    console.log(sqlInput)
     const rowNums = await db.query(
         sqlEnhancedInput,
         []

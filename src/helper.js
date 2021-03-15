@@ -61,6 +61,23 @@ function getEnhancedFilteredMoviesSql(genreList, yearList){
     return sqlInput
 }
 
+function getPersonalitySql(tagList){
+    if(tagList === undefined){
+        throw ` tag list is not defined!`
+    }
+    if(tagList.length == 0){
+        tagList.push('')
+    }
+
+    var sqlInput = format("SELECT mode() WITHIN GROUP(ORDER BY openness) AS openness, mode() WITHIN GROUP(ORDER BY agreeableness) AS agreeableness, mode() WITHIN GROUP(ORDER BY emotional_stability) AS emotional_stability, mode() WITHIN GROUP(ORDER BY conscientiousness) AS conscientiousness, mode() WITHIN GROUP(ORDER BY extraversion) AS extraversion FROM (SELECT * FROM user_personality WHERE personality_userid IN (SELECT DISTINCT personality_userid FROM personality_ratings WHERE movieid IN (SELECT movieid FROM tags WHERE tag ILIKE %L", tagList[0])
+
+    for(i = 1; i < tagList.length; i++){
+        sqlInput = sqlInput.concat(format(" OR tag ILIKE %L", tagList[i]))
+    }
+    sqlInput = sqlInput.concat(format(") AND rating >= 3.5)) b"))
+    return sqlInput
+}
+
 function getRatingsSql(tagList, genreId){
     if(tagList == undefined){
         throw `Tags list does not exist!`
@@ -178,6 +195,7 @@ function emptyOrRows(rows){
 module.exports = {
     getOffset,
     getRatingsSql,
+    getPersonalitySql,
     // getRatingsForMultipleGenresSql,
     // getRatingsForMultipleTagsSql,
     getFilteredMoviesSql,

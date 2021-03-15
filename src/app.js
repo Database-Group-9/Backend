@@ -11,6 +11,7 @@ var totalRowsRouter = require('./routes/totalRows');
 var genresRouter = require('./routes/genres');
 var yearsRouter = require('./routes/years');
 var movieRouter = require('./routes/movie');
+var predictRouter = require('./routes/predict');
 
 var app = express();
 var cors = require('cors')
@@ -37,6 +38,7 @@ app.use('/tags', tagsRouter);
 app.use('/totalRows', totalRowsRouter);
 app.use('/genres', genresRouter);
 app.use('/years', yearsRouter);
+app.use('/predict', predictRouter);
 
 
 module.exports = app;
