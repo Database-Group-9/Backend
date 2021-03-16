@@ -1,6 +1,8 @@
 FROM node:14
 
-WORKDIR /usr/src/api
+RUN mkdir -p /usr/src/backend/src
+
+WORKDIR /usr/src/backend/src
 
 COPY package*.json ./
 
@@ -11,5 +13,6 @@ RUN npm install
 #Bundle app source
 COPY . .
 
-EXPOSE 8080
-CMD [ "node", "server.js"]
+EXPOSE 3001
+
+CMD [ "node", "./src/bin/www"]
