@@ -46,7 +46,7 @@ async function getUniqueTags(page = 1, orderBy = 'asc'){
         sql_0,
         []
     );
-    var sql = format("select distinct(lower(tag)) as tag from tags order by tag %s OFFSET %L LIMIT %L", 
+    var sql = format("select distinct(lower(tag)) as tag from tags order by tag %s", 
                     order, offset, config.listPerPage)
     const rows = await db.query(
         sql,
