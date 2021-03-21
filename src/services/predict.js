@@ -3,8 +3,6 @@ const helper = require('../helper');
 
 async function getRatingsForGenreAndTag(tag=[], genreId=[]){
     var sql = helper.getRatingsSql(tag, genreId);
-    console.log("Hello")
-    console.log(sql)
     const rows0 = await db.query(
         sql[0],
         []

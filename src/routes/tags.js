@@ -12,4 +12,14 @@ router.get('/', async function(req, res, next){
     }
 });
 
+router.get('/unique', async function(req, res, next){
+    try{
+        res.json(await tags.getUniqueTags(req.query.page, req.query.orderBy));
+    }
+    catch(err){
+        console.error(`Error while retrieving tags `, err.message);
+        next(err);
+    }
+});
+
 module.exports = router;

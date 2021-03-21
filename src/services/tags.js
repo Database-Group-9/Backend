@@ -38,6 +38,35 @@ async function getTags(page = 1, sortBy = 'tagId', orderBy = 'asc', filterBy = '
     }
 }
 
+async function getUniqueTags(page = 1, orderBy = 'asc'){
+    const offset = helper.getOffset(page, config.listPerPage);
+    const order = helper.sanitiseParams(orderBy);
+    var sql_0 = format("select count(a.*) from (select distinct(lower(tag)) as tag from tags order by tag %s)a", order)
+    const rowNums = await db.query(
+        sql_0,
+        []
+    );
+    var sql = format("select distinct(lower(tag)) as tag from tags order by tag %s OFFSET %L LIMIT %L", 
+                    order, offset, config.listPerPage)
+    const rows = await db.query(
+        sql,
+        []
+    );
+    const totalPage = Math.ceil((rowNums[0].count)/ config.listPerPage)
+    const totalRows = rows.length
+    const data = helper.emptyOrRows(rows)
+    const meta = {page,
+                  orderBy,
+                  totalRows,
+                  totalPage
+                };
+    return{
+        data, 
+        meta
+    }
+}
+
 module.exports = {
-    getTags
+    getTags,
+    getUniqueTags
 }
