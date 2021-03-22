@@ -2,11 +2,11 @@ const env = process.env;
 
 const config = {
     db: {
-        host: env.DB_HOST || 'db',
-        port: env.DB_PORT || '5432',
-        user: env.DB_USER || 'postgres',
-        password: env.DB_PASSWORD || 'myPassword',
-        database: env.DB_DATABASE || 'database_cw'
+        host: env.DB_HOST,
+        port: env.DB_PORT,
+        user: env.DB_USER,
+        password: env.DB_PASSWORD,
+        database: env.DB_DATABASE
     },
     listPerPage: env.LIST_PER_PAGE || 20
 };
